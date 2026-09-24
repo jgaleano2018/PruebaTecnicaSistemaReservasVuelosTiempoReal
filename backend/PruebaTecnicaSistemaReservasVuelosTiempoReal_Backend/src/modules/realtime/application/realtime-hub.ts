@@ -1,6 +1,6 @@
 import { filter, map, Observable, scan, shareReplay, startWith } from 'rxjs';
 import { AnyDomainEvent, EventType } from '@reservas-vuelos/shared';
-import { EventBus } from '../../../shared/application/event-bus.port';
+import { EventBus } from '@reservas-vuelos/service-kernel';
 
 export interface RealtimeStats {
   totalEvents: number;

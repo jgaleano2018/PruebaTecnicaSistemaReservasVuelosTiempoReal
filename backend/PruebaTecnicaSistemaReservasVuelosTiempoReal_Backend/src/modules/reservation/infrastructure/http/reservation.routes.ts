@@ -1,7 +1,16 @@
 import { Router } from 'express';
-import { createSeatHoldSchema, CreateSeatHoldInput, UserRole } from '@reservas-vuelos/shared';
-import { asyncHandler, ok, validate, validated } from '../../../../shared/infrastructure/http/http-utils';
-import { authenticate, authorize, internalOnly, JwtService, optionalAuth } from '../../../../shared/infrastructure/auth/jwt';
+import { createSeatHoldSchema, UserRole } from '@reservas-vuelos/shared';
+import {
+  asyncHandler,
+  ok,
+  validate,
+  validated,
+  authenticate,
+  authorize,
+  internalOnly,
+  JwtService,
+  optionalAuth,
+} from '@reservas-vuelos/service-kernel';
 import { GetSeatMapUseCase, GetSeatStatesUseCase, GetSeatUseCase } from '../../application/seat-map.use-cases';
 import { CreateSeatHoldUseCase, ReleaseSeatHoldUseCase } from '../../application/seat-hold.use-cases';
 import { GetReservationUseCase, GetTicketUseCase, ListMyReservationsUseCase } from '../../application/reservation-query.use-cases';
@@ -54,7 +63,7 @@ export function buildReservationRouter(d: ReservationHttpDeps): Router {
     customerOrAdmin,
     validate(createSeatHoldSchema),
     asyncHandler(async (req, res) => {
-      const body = validated<typeof createSeatHoldSchema>(req) as CreateSeatHoldInput;
+      const body = validated<typeof createSeatHoldSchema>(req);
       const hold = await d.createHold.execute({ ...body, userId: req.user!.sub });
       ok(res, hold, 201);
     }),

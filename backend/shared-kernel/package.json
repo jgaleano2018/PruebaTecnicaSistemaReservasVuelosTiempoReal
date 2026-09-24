@@ -1,0 +1,40 @@
+{
+  "name": "@reservas-vuelos/service-kernel",
+  "version": "1.0.0",
+  "description": "Núcleo técnico compartido (Capa de Infraestructura y Comunicación) del monolito modular y los microservicios",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist", "database.js", "database.d.ts"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "kafkajs": "^2.2.4",
+    "pino": "^9.5.0",
+    "pino-http": "^10.3.0",
+    "rxjs": "^7.8.1",
+    "zod": "^3.23.8"
+  },
+  "peerDependencies": {
+    "@reservas-vuelos/shared": "^1.0.0",
+    "mongoose": "^8.8.1"
+  },
+  "peerDependenciesMeta": {
+    "mongoose": { "optional": true }
+  },
+  "devDependencies": {
+    "@reservas-vuelos/shared": "file:../../cliente/shared",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.9.0",
+    "mongoose": "^8.8.1",
+    "typescript": "^5.6.3"
+  },
+  "license": "MIT"
+}

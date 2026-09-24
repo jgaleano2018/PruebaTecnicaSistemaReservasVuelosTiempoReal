@@ -1,6 +1,5 @@
 import { AuthResponseDto, AuthUserDto, LoginInput, RegisterInput, UserRole } from '@reservas-vuelos/shared';
-import { ConflictError, NotFoundError, UnauthorizedError } from '../../../shared/domain/errors';
-import { JwtService } from '../../../shared/infrastructure/auth/jwt';
+import { ConflictError, NotFoundError, UnauthorizedError, JwtService } from '@reservas-vuelos/service-kernel';
 import { PasswordHasher, User, UserRepository } from '../domain/user';
 
 const toUserDto = (u: User): AuthUserDto => ({ id: u.id, email: u.email, fullName: u.fullName, role: u.role });

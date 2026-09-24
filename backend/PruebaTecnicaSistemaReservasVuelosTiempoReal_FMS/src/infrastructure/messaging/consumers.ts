@@ -1,5 +1,5 @@
 import { EventTypes, SeatStatus } from '@reservas-vuelos/shared';
-import { EventBus } from '../../shared/application/event-bus.port';
+import { EventBus } from '@reservas-vuelos/service-kernel';
 import { DashboardService } from '../../application/dashboard.use-cases';
 
 /**

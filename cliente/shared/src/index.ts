@@ -3,3 +3,4 @@ export * from './dtos';
 export * from './events';
 export * from './realtime';
 export * from './validation';
+export * from './rules';

@@ -4,14 +4,15 @@
   "description": "Payment Service: bloqueo temporal de asiento en checkout, procesamiento de pagos ficticios, validaciones, reembolsos e integraci\u00f3n con pasarela (simulada)",
   "main": "dist/main.js",
   "scripts": {
-    "build:shared": "npm --prefix ../../cliente/shared install && npm --prefix ../../cliente/shared run build",
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/main.js",
     "dev": "tsx watch src/main.ts",
     "test": "jest --runInBand",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build:deps": "npm --prefix ../../cliente/shared install && npm --prefix ../../cliente/shared run build && npm --prefix ../shared-kernel install && npm --prefix ../shared-kernel run build"
   },
   "dependencies": {
+    "@reservas-vuelos/service-kernel": "file:../shared-kernel",
     "@reservas-vuelos/shared": "file:../../cliente/shared",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -45,7 +46,10 @@
     "roots": [
       "<rootDir>/test"
     ],
-    "testTimeout": 20000
+    "testTimeout": 20000,
+    "setupFiles": [
+      "<rootDir>/test/setup-env.ts"
+    ]
   },
   "license": "MIT"
 }

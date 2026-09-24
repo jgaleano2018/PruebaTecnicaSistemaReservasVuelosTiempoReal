@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import mongoose, { Model, Types } from 'mongoose';
-import { logger } from '../../shared/infrastructure/logging/logger';
+import { logger } from '@reservas-vuelos/service-kernel';
+import { ensureCollections } from '@reservas-vuelos/service-kernel/database';
 import { AircraftModel, AirportModel, FlightModel, RouteModel } from '../../modules/flight/infrastructure/persistence/flight.schemas';
 import { ReservationModel, SeatModel } from '../../modules/reservation/infrastructure/persistence/reservation.schemas';
 import { CustomerModel } from '../../modules/customer/infrastructure/persistence/customer.persistence';
@@ -36,11 +37,8 @@ export async function seedDatabase(opts: { onlyIfEmpty?: boolean; reset?: boolea
   }
 
   // 1. Crear colecciones e índices explícitamente
-  for (const [name, model] of MONOLITH_COLLECTIONS) {
-    await model.createCollection().catch(() => undefined);
-    await model.syncIndexes();
-    logger.info({ collection: name }, 'Colección lista');
-  }
+  await ensureCollections(MONOLITH_COLLECTIONS.map(([, model]) => model));
+  logger.info({ collections: MONOLITH_COLLECTIONS.map(([name]) => name) }, 'Colecciones e índices listos');
 
   // 2. Datos
   const data = buildSeedDataset(new Date(), opts.days ?? 10);

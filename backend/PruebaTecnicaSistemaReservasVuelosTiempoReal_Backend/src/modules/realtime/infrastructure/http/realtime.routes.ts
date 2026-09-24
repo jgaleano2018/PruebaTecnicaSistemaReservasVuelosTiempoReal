@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import { firstValueFrom } from 'rxjs';
 import { EventType, EventTypes } from '@reservas-vuelos/shared';
-import { ok } from '../../../../shared/infrastructure/http/http-utils';
-import { streamSse } from '../../../../shared/infrastructure/http/sse';
+import { ok, streamSse } from '@reservas-vuelos/service-kernel';
 import { RealtimeHub } from '../../application/realtime-hub';
 
 export function buildRealtimeRouter(hub: RealtimeHub, subscriptions: string[]): Router {

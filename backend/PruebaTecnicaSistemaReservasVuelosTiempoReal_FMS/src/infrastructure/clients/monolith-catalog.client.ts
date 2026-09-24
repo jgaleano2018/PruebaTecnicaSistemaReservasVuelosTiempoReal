@@ -1,5 +1,5 @@
 import { ApiResponse, FlightDto, SeatStatus } from '@reservas-vuelos/shared';
-import { DomainError } from '../../shared/domain/errors';
+import { DomainError } from '@reservas-vuelos/service-kernel';
 import { FlightCatalogClient } from '../../domain/ports';
 
 /** Adaptador HTTP hacia los endpoints internos del monolito modular. */

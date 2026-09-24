@@ -1,6 +1,5 @@
 import { EventTypes } from '@reservas-vuelos/shared';
-import { EventBus } from '../../../../shared/application/event-bus.port';
-import { logger } from '../../../../shared/infrastructure/logging/logger';
+import { EventBus, logger } from '@reservas-vuelos/service-kernel';
 import { CancelReservationOnRefundUseCase, ConfirmReservationUseCase } from '../../application/confirmation.use-cases';
 import { ReleaseHoldsOnFlightCancelledUseCase } from '../../application/seat-hold.use-cases';
 
