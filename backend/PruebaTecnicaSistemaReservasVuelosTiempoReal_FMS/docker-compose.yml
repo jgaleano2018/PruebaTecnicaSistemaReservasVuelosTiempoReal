@@ -1,0 +1,37 @@
+# Flight Management Service (flight-db) + infraestructura compartida.
+# Necesita el monolito para sincronizar el catálogo (MONOLITH_URL). Uso: docker compose up -d --build
+name: reservas-vuelos
+
+include:
+  - ../infra/docker-compose.infra.yml
+
+services:
+  flight-management-service:
+    build:
+      context: ../..
+      dockerfile: backend/PruebaTecnicaSistemaReservasVuelosTiempoReal_FMS/Dockerfile
+    image: reservas-vuelos/flight-management-service:latest
+    container_name: reservas-fms
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      SERVICE_NAME: flight-management-service
+      MONGO_URI: mongodb://mongo:27017/flight-db
+      EVENT_BUS: kafka
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_CLIENT_ID: flight-management-service
+      KAFKA_GROUP_ID: flight-management-service-group
+      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key-reservas-vuelos-2026}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-internal-key-reservas-vuelos}
+      MONOLITH_URL: ${MONOLITH_URL:-http://monolith:3000}
+      SYNC_DAYS_AHEAD: 15
+      LOG_LEVEL: info
+    depends_on:
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks: [reservas-net]
