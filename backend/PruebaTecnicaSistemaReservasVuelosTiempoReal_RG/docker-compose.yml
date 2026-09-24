@@ -1,0 +1,32 @@
+# Realtime Gateway (Socket.io + SSE) + infraestructura compartida. Uso: docker compose up -d --build
+# Escalar horizontalmente: docker compose up -d --scale realtime-gateway=3 (quitar container_name y
+# publicar el puerto a través de un balanceador con sticky sessions).
+name: reservas-vuelos
+
+include:
+  - ../infra/docker-compose.infra.yml
+
+services:
+  realtime-gateway:
+    build:
+      context: ../..
+      dockerfile: backend/PruebaTecnicaSistemaReservasVuelosTiempoReal_RG/Dockerfile
+    image: reservas-vuelos/realtime-gateway:latest
+    container_name: reservas-realtime-gateway
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      SERVICE_NAME: realtime-gateway
+      EVENT_BUS: kafka
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_CLIENT_ID: realtime-gateway
+      KAFKA_GROUP_PREFIX: realtime-gateway
+      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key-reservas-vuelos-2026}
+      LOG_LEVEL: info
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks: [reservas-net]
