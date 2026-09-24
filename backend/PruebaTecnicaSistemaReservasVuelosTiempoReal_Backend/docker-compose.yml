@@ -1,0 +1,39 @@
+# Monolito Modular (Vuelos, Reservas, Clientes, Tiempo Real, Dashboard) + infraestructura compartida.
+# Uso:  docker compose up -d --build
+# Todos los proyectos usan el mismo nombre de proyecto (reservas-vuelos) y la red reservas-net,
+# por lo que se pueden levantar uno a uno desde cada carpeta o todos desde backend/docker-compose.yml.
+name: reservas-vuelos
+
+include:
+  - ../infra/docker-compose.infra.yml
+
+services:
+  monolith:
+    build:
+      context: ../..
+      dockerfile: backend/PruebaTecnicaSistemaReservasVuelosTiempoReal_Backend/Dockerfile
+    image: reservas-vuelos/monolith:latest
+    container_name: reservas-monolith
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      SERVICE_NAME: monolith
+      MONGO_URI: mongodb://mongo:27017/reservas_vuelos_db
+      EVENT_BUS: kafka
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_CLIENT_ID: monolith
+      KAFKA_GROUP_ID: monolith-group
+      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key-reservas-vuelos-2026}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-internal-key-reservas-vuelos}
+      SEAT_LOCK_MINUTES: 7
+      SEED_ON_START: "true"
+      LOG_LEVEL: info
+    depends_on:
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks: [reservas-net]
