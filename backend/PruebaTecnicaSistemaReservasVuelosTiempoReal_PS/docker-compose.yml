@@ -1,0 +1,36 @@
+# Payment Service (payment-db) + infraestructura compartida.
+# Necesita el monolito para el bloqueo de asientos (MONOLITH_URL). Uso: docker compose up -d --build
+name: reservas-vuelos
+
+include:
+  - ../infra/docker-compose.infra.yml
+
+services:
+  payment-service:
+    build:
+      context: ../..
+      dockerfile: backend/PruebaTecnicaSistemaReservasVuelosTiempoReal_PS/Dockerfile
+    image: reservas-vuelos/payment-service:latest
+    container_name: reservas-payment
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      NODE_ENV: production
+      PORT: 3002
+      SERVICE_NAME: payment-service
+      MONGO_URI: mongodb://mongo:27017/payment-db
+      EVENT_BUS: kafka
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_CLIENT_ID: payment-service
+      KAFKA_GROUP_ID: payment-service-group
+      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key-reservas-vuelos-2026}
+      MONOLITH_URL: ${MONOLITH_URL:-http://monolith:3000}
+      GATEWAY_LATENCY_MS: 400
+      LOG_LEVEL: info
+    depends_on:
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks: [reservas-net]
