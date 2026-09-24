@@ -1,0 +1,87 @@
+### Colección de pruebas manuales (VS Code REST Client / IntelliJ HTTP Client)
+@mono = http://localhost:3000/api/v1
+@fms = http://localhost:3001/api/v1
+@pay = http://localhost:3002/api/v1
+@rg = http://localhost:4000/api/v1
+
+### 0. Login cliente
+# @name login
+POST {{mono}}/auth/login
+Content-Type: application/json
+
+{ "email": "cliente@skyandes.com", "password": "Cliente123*" }
+
+###
+@token = {{login.response.body.data.accessToken}}
+
+### 0b. Login administrador
+# @name admin
+POST {{mono}}/auth/login
+Content-Type: application/json
+
+{ "email": "admin@skyandes.com", "password": "Admin123*" }
+
+###
+@adminToken = {{admin.response.body.data.accessToken}}
+
+### 1. HU1 - Buscar vuelos (cambie la fecha por mañana)
+# @name search
+GET {{mono}}/flights/search?origin=BOG&destination=MDE&date=2026-09-25
+
+###
+@flightId = {{search.response.body.data[1].id}}
+
+### 2a. HU2 - Mapa de asientos
+GET {{mono}}/flights/{{flightId}}/seats
+Authorization: Bearer {{token}}
+
+### 2b. HU2 - Información de un asiento
+GET {{mono}}/flights/{{flightId}}/seats/10A
+Authorization: Bearer {{token}}
+
+### 2c. HU2 - Bloqueo temporal + intención de pago (Payment Service)
+# @name hold
+POST {{pay}}/checkout/holds
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "flightId": "{{flightId}}", "seatNumber": "10A" }
+
+###
+@intentId = {{hold.response.body.data.paymentIntent.id}}
+@reservationId = {{hold.response.body.data.hold.reservationId}}
+
+### 3. HU3 - Pagar con datos ficticios
+# @name payment
+POST {{pay}}/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "paymentIntentId": "{{intentId}}",
+  "passenger": { "firstName": "Laura", "lastName": "Gómez", "documentType": "CC", "documentNumber": "1037600123", "email": "laura@example.com" },
+  "card": { "number": "4111111111111111", "holderName": "LAURA GOMEZ", "expiryMonth": 12, "expiryYear": 2030, "cvv": "123" }
+}
+
+### 4. Boleto
+GET {{mono}}/reservations/{{reservationId}}/ticket
+Authorization: Bearer {{token}}
+
+### 5. HU4 - Dashboard en vivo del vuelo (FMS)
+GET {{fms}}/dashboard/flights/{{flightId}}/occupancy
+
+### 5b. HU4 - Vista general
+GET {{fms}}/dashboard/overview
+
+### HU1 tiempo real - Retrasar el vuelo (admin)
+PATCH {{fms}}/flights/{{flightId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "status": "DELAYED", "delayMinutes": 45, "reason": "Condiciones climáticas" }
+
+### Historial de estados
+GET {{fms}}/flights/{{flightId}}/status-history
+
+### Realtime Gateway
+GET {{rg}}/gateway/stats
