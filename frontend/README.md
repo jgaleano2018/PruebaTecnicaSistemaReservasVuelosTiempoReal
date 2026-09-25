@@ -89,7 +89,7 @@ Son variables de **build**: las usa el navegador, por lo que deben ser URLs alca
 
 ```bash
 # Todo el sistema (infraestructura + backend + frontend) desde la carpeta backend:
-cd backend && docker compose up -d --build        # frontend en http://localhost:8080
+cd backend && docker compose up -d --build        # frontend en http://localhost:8090
 
 # Solo el frontend (con el backend ya levantado):
 cd frontend && docker compose up -d --build

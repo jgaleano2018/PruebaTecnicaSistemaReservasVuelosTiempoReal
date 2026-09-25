@@ -44,7 +44,11 @@ export const passengerSchema = z.object({
   firstName: z.string().trim().min(2).max(60),
   lastName: z.string().trim().min(2).max(60),
   documentType: z.enum(['CC', 'CE', 'PASSPORT', 'TI']),
-  documentNumber: z.string().trim().regex(/^[A-Za-z0-9]{5,20}$/, 'Documento inválido'),
+  // Acepta el formato habitual con puntos, espacios o guiones (1.037.600.123) y lo normaliza a solo alfanuméricos
+  documentNumber: z
+    .string()
+    .transform((v) => v.replace(/[\s.\-]/g, ''))
+    .pipe(z.string().regex(/^[A-Za-z0-9]{5,20}$/, 'Documento inválido: use entre 5 y 20 letras o números')),
   email: z.string().trim().toLowerCase().email('Correo inválido'),
   phone: z
     .string()

@@ -36,7 +36,7 @@ al instante y **nunca se vende el mismo asiento dos veces** (sin *double booking
 │  └─ requests.http              Colección de peticiones del flujo principal
 ├─ cliente/shared/               DTOs, eventos y validaciones compartidas frontend ↔ backend
 ├─ compartidas/docs/             Documentación detallada
-└─ frontend/                     Frontend React (web + dashboard/admin)   :5173 dev / :8080 Docker
+└─ frontend/                     Frontend React (web + dashboard/admin)   :5173 dev / :8090 Docker
 ```
 
 ---
@@ -64,7 +64,7 @@ docker compose logs -f monolith     # la primera vez crea las bases y carga la d
 | Flight Management Service | http://localhost:3001/api/v1 |
 | Payment Service | http://localhost:3002/api/v1 |
 | Realtime Gateway (Socket.io / SSE) | ws://localhost:4000 · http://localhost:4000/api/v1/gateway/protocol |
-| **Frontend React (web + dashboard)** | **http://localhost:8080** |
+| **Frontend React (web + dashboard)** | **http://localhost:8090** |
 | Kafka UI | http://localhost:8085 |
 | MongoDB | mongodb://localhost:27017 (`reservas_vuelos_db`, `flight-db`, `payment-db`) |
 
@@ -172,6 +172,7 @@ La documentación detallada está en [`compartidas/docs/`](compartidas/docs):
 |---|---|
 | [`architecture.md`](compartidas/docs/architecture.md) | Decisiones de arquitectura, capas hexagonales, eventos Kafka, anti double booking, tiempo real, secuencias |
 | [`ejecucion-local.md`](compartidas/docs/ejecucion-local.md) | Guía paso a paso de ejecución, variables de entorno y solución de problemas |
+| [`explicacion_codigo_fuente.md`](compartidas/docs/explicacion_codigo_fuente.md) | Recorrido archivo por archivo (frontend, monolito, microservicios) de cada historia de usuario y su regla de tiempo real |
 | [`decisiones-tecnicas.md`](compartidas/docs/decisiones-tecnicas.md) | Justificación de librerías, protocolos, persistencia y caché (backend, frontend e interacción) |
 | [`api.md`](compartidas/docs/api.md) | Endpoints REST de los 4 servicios y protocolo WebSocket/SSE |
 | [`validacion-requisitos.md`](compartidas/docs/validacion-requisitos.md) | Cómo se cumple cada requisito de la prueba y dónde se evidencia |

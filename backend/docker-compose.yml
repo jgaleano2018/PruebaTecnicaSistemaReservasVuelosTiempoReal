@@ -2,7 +2,7 @@
 #   cd backend && docker compose up -d --build
 # Monolito http://localhost:3000 | FMS http://localhost:3001 | Payment http://localhost:3002
 # Realtime Gateway ws://localhost:4000 | Kafka UI http://localhost:8085 | MongoDB localhost:27017
-# Frontend (web + dashboard) http://localhost:8080
+# Frontend (web + dashboard) http://localhost:8090
 name: reservas-vuelos
 
 include:
