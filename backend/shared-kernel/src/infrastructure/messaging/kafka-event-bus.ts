@@ -53,6 +53,8 @@ export class KafkaEventBus implements EventBus {
       idempotent: true,
       maxInFlightRequests: 1,
       createPartitioner: Partitioners.DefaultPartitioner,
+      // El productor idempotente exige reintentos ilimitados para garantizar exactly-once por partición
+      retry: { retries: Number.MAX_SAFE_INTEGER, initialRetryTime: 300, maxRetryTime: 30000 },
     });
     this.consumer = this.kafka.consumer({ groupId: opts.groupId, sessionTimeout: 30000 });
     this.admin = this.kafka.admin();

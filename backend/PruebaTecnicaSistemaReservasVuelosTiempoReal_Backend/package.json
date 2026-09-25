@@ -1,19 +1,20 @@
 {
   "name": "reservas-vuelos-monolito-modular",
   "version": "1.0.0",
-  "description": "Monolito modular (arquitectura hexagonal) del Sistema de Reservas de Vuelos en Tiempo Real: módulos de Vuelos, Reservas, Clientes, Tiempo Real y Dashboard",
+  "description": "Monolito modular (arquitectura hexagonal) del Sistema de Reservas de Vuelos en Tiempo Real: m\u00f3dulos de Vuelos, Reservas, Clientes, Tiempo Real y Dashboard",
   "main": "dist/main.js",
   "scripts": {
-    "build:shared": "npm --prefix ../../cliente/shared install && npm --prefix ../../cliente/shared run build",
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/main.js",
     "dev": "tsx watch src/main.ts",
     "seed": "tsx src/database/seed/run-seed.ts",
     "seed:prod": "node dist/database/seed/run-seed.js",
     "test": "jest --runInBand",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build:deps": "npm --prefix ../../cliente/shared install && npm --prefix ../../cliente/shared run build && npm --prefix ../shared-kernel install && npm --prefix ../shared-kernel run build"
   },
   "dependencies": {
+    "@reservas-vuelos/service-kernel": "file:../shared-kernel",
     "@reservas-vuelos/shared": "file:../../cliente/shared",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -46,8 +47,13 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "roots": ["<rootDir>/test"],
-    "testTimeout": 20000
+    "roots": [
+      "<rootDir>/test"
+    ],
+    "testTimeout": 20000,
+    "setupFiles": [
+      "<rootDir>/test/setup-env.ts"
+    ]
   },
   "license": "MIT"
 }

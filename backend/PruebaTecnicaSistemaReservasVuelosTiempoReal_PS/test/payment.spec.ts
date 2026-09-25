@@ -2,12 +2,11 @@ import request from 'supertest';
 import { EventTypes, ReservationStatus, SeatHoldDto, UserRole } from '@reservas-vuelos/shared';
 import { compose } from '../src/container';
 import { createHttpApp } from '../src/app';
-import { InMemoryBroker, InMemoryEventBus } from '../src/shared/infrastructure/messaging/in-memory-event-bus';
+import { InMemoryBroker, InMemoryEventBus } from '@reservas-vuelos/service-kernel';
 import { InMemoryPaymentIntentRepository, InMemoryPaymentRepository, InMemoryRefundRepository } from '../src/infrastructure/persistence/in-memory.repositories';
 import { FakePaymentGateway } from '../src/infrastructure/gateway/fake-payment.gateway';
 import { ReservationHoldClient } from '../src/domain/payment';
 
-process.env.LOG_LEVEL = 'silent';
 
 function setup(expiresInMs = 7 * 60000) {
   let n = 0;

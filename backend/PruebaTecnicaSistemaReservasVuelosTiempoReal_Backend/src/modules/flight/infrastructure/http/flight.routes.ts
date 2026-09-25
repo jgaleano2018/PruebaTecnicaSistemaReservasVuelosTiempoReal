@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { flightSearchQuerySchema, FlightSearchQueryInput } from '@reservas-vuelos/shared';
-import { asyncHandler, ok, validate, validated } from '../../../../shared/infrastructure/http/http-utils';
-import { internalOnly } from '../../../../shared/infrastructure/auth/jwt';
+import { flightSearchQuerySchema } from '@reservas-vuelos/shared';
+import { asyncHandler, ok, validate, validated, internalOnly } from '@reservas-vuelos/service-kernel';
 import {
   GetCatalogUseCase,
   GetFlightUseCase,
@@ -34,7 +33,7 @@ export function buildFlightRouter(d: FlightHttpDeps): Router {
     '/flights/search',
     validate(flightSearchQuerySchema, 'query'),
     asyncHandler(async (req, res) => {
-      const query = validated<typeof flightSearchQuerySchema>(req, 'query') as FlightSearchQueryInput;
+      const query = validated<typeof flightSearchQuerySchema>(req, 'query');
       const flights = await d.searchFlights.execute(query);
       ok(res, flights, 200, {
         count: flights.length,
@@ -60,7 +59,7 @@ export function buildFlightRouter(d: FlightHttpDeps): Router {
     internalOnly(d.internalApiKey),
     validate(syncQuery, 'query'),
     asyncHandler(async (req, res) => {
-      const q = validated<typeof syncQuery>(req, 'query') as z.infer<typeof syncQuery>;
+      const q = validated<typeof syncQuery>(req, 'query');
       const from = q.from ?? new Date(Date.now() - 24 * 3600 * 1000);
       const to = q.to ?? new Date(Date.now() + 60 * 24 * 3600 * 1000);
       ok(res, await d.listForSync.execute(from, to));

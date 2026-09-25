@@ -1,5 +1,33 @@
 # Arquitectura
 
+## Por qué un híbrido monolito modular + microservicios
+
+| Decisión | Motivo |
+|---|---|
+| **Reservas, Vuelos, Clientes, Tiempo Real y Dashboard en un monolito modular** | El bloqueo y la confirmación de asientos son la operación crítica de concurrencia. Tenerlos junto al inventario de vuelos en una sola base de datos permite garantizar la ausencia de *double booking* con operaciones atómicas, sin transacciones distribuidas ni 2PC. Además simplifica el despliegue y la depuración. |
+| **Módulos con fronteras explícitas (puertos)** | Cada módulo expone casos de uso y consume a otros solo mediante interfaces (`SeatAvailabilityPort`, `CustomerRegistryPort`, `FlightReaderPort`). Por eso se puede extraer un módulo a microservicio cambiando solo el adaptador. |
+| **Flight Management Service como microservicio** | La operación de vuelos (retrasos, cancelaciones, feeds de aerolíneas/GDS) y el dashboard tienen otro ritmo de cambio y otros usuarios (operaciones). Su proyección de ocupación es un *read model* alimentado por eventos (CQRS). |
+| **Payment Service como microservicio** | Aísla datos sensibles y la integración con la pasarela; se puede auditar, desplegar y escalar por separado. |
+| **Realtime Gateway como microservicio** | Las conexiones WebSocket son de larga duración y escalan distinto que la API; separarlas evita que picos de conexiones afecten al negocio. |
+| **Kafka como Event Bus** | Desacopla a productores de consumidores, garantiza orden por vuelo (clave de partición `flightId`), permite reintentos y *replay*, y reparte los eventos a varios consumidores. |
+| **shared-kernel + cliente/shared** | Evitan duplicar código (DRY). `cliente/shared` contiene los contratos (DTOs, eventos, validaciones, reglas) entre frontend y backend. `backend/shared-kernel` contiene la infraestructura técnica común (JWT, manejo de errores, logs, SSE, Kafka, fábrica de Express, ciclo de vida del proceso). Ninguno contiene lógica de negocio de un servicio, así que no hay acoplamiento de dominio. |
+
+## Principios SOLID aplicados
+
+- **S (una sola responsabilidad):** un caso de uso por clase (`CreateSeatHoldUseCase`, `ConfirmReservationUseCase`, `ProcessPaymentUseCase`...). Los controladores solo validan y delegan; los repositorios solo persisten.
+- **O (abierto/cerrado):** para añadir un transporte o una persistencia se crea un adaptador nuevo sin tocar los casos de uso. Por ejemplo, `InMemoryEventBus` y `KafkaEventBus` implementan el mismo `EventBus`.
+- **L (sustitución de Liskov):** los adaptadores en memoria y los de Mongo/Kafka son intercambiables. Las pruebas ejecutan los mismos casos de uso con unos u otros.
+- **I (segregación de interfaces):** puertos pequeños y específicos (`SeatRepository`, `ReservationRepository`, `FlightCatalogClient`, `PaymentGateway`, `ReservationHoldClient`, `Clock`).
+- **D (inversión de dependencias):** la aplicación depende de abstracciones, y el *composition root* (`container.ts`) inyecta las implementaciones.
+
+## Manejo de errores
+
+- Errores de dominio tipados (`NotFoundError`, `ConflictError`, `ValidationError`, `ForbiddenError`...) que un único `errorHandler` traduce a HTTP con un formato uniforme `{ success: false, error: { code, message, details } }`.
+- Validación de entrada con esquemas Zod compartidos (422 con el detalle por campo).
+- Los errores de negocio de un servicio remoto se propagan al cliente; por ejemplo, un 409 `SEAT_NOT_AVAILABLE` del monolito llega así a través del Payment Service.
+- Handlers de Kafka con reintentos y *backoff*; tras agotarse se registran sin bloquear la partición.
+- Compensaciones (saga) cuando un paso asíncrono falla. Registro de `unhandledRejection` y `uncaughtException`, y apagado ordenado.
+
 ## Vista general
 
 ```mermaid

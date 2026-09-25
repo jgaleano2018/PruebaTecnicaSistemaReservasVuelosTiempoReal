@@ -1,5 +1,5 @@
 import { DemandReportDto, ReservationStatus } from '@reservas-vuelos/shared';
-import { NotFoundError } from '../../../shared/domain/errors';
+import { NotFoundError } from '@reservas-vuelos/service-kernel';
 import { SeatAvailabilityPort } from '../../flight/domain/flight.ports';
 import { AnalyticsReadModel, FlightMetrics, SummaryReport } from '../domain/analytics.ports';
 

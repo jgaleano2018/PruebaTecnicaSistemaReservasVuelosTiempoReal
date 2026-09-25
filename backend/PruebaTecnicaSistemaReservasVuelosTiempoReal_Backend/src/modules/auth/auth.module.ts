@@ -1,4 +1,4 @@
-import { JwtService } from '../../shared/infrastructure/auth/jwt';
+import { JwtService } from '@reservas-vuelos/service-kernel';
 import { AuthUseCases } from './application/auth.use-cases';
 import { PasswordHasher, UserRepository } from './domain/user';
 import { buildAuthRouter } from './infrastructure/http/auth.routes';

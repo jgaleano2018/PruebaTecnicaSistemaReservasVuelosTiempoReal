@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { EventBus } from '../../shared/application/event-bus.port';
+import { EventBus } from '@reservas-vuelos/service-kernel';
 import {
   ApplyFlightStatusChangeUseCase,
   GetCatalogUseCase,

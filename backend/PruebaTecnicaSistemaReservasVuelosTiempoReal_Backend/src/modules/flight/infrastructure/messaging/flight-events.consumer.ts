@@ -1,6 +1,5 @@
 import { EventTypes } from '@reservas-vuelos/shared';
-import { EventBus } from '../../../../shared/application/event-bus.port';
-import { logger } from '../../../../shared/infrastructure/logging/logger';
+import { EventBus, logger } from '@reservas-vuelos/service-kernel';
 import { ApplyFlightStatusChangeUseCase } from '../../application/flight.use-cases';
 
 /** Adaptador de entrada (driving): suscripción al evento FlightStatusChanged. */

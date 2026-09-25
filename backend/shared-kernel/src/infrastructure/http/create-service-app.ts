@@ -24,7 +24,19 @@ export function createServiceApp(opts: ServiceAppOptions): Express {
   app.use(helmet());
   app.use(cors({ origin: !opts.corsOrigin || opts.corsOrigin === '*' ? true : opts.corsOrigin.split(','), credentials: true }));
   app.use(express.json({ limit: opts.jsonLimit ?? '100kb' }));
-  if (opts.httpLogs !== false) app.use(pinoHttp({ logger, autoLogging: { ignore: (req) => req.url === '/health' } }));
+  if (opts.httpLogs !== false) {
+    app.use(
+      pinoHttp({
+        logger,
+        autoLogging: { ignore: (req) => req.url === '/health' },
+        // Log de acceso compacto: sin cabeceras (evita exponer tokens y reduce ruido)
+        serializers: {
+          req: (req) => ({ method: req.method, url: req.url }),
+          res: (res) => ({ statusCode: res.statusCode }),
+        },
+      }),
+    );
+  }
   app.get('/health', (_req, res) => res.json({ status: 'ok', service: opts.service, time: new Date().toISOString() }));
   app.use('/api/v1', opts.router);
   app.use(notFoundHandler);

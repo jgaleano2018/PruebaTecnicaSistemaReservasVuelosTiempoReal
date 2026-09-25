@@ -1,4 +1,14 @@
-import { CabinClass, FlightStatus, ReservationStatus, SeatPosition, SeatStatus, UserRole } from '@reservas-vuelos/shared';
+import {
+  BUSINESS_UTC_OFFSET,
+  businessDayRange,
+  CabinClass,
+  FlightStatus,
+  ReservationStatus,
+  SeatPosition,
+  SeatStatus,
+  toBusinessDate,
+  UserRole,
+} from '@reservas-vuelos/shared';
 import { Aircraft, Airport, Flight, Route } from '../../modules/flight/domain/flight.entity';
 import { generateReservationCode, Reservation, Seat } from '../../modules/reservation/domain/reservation.entities';
 
@@ -195,10 +205,6 @@ export interface SeedDataset {
   reservationPassenger: number[];
 }
 
-function localDateParts(d: Date): string {
-  const bogota = new Date(d.getTime() - 5 * 3600 * 1000);
-  return bogota.toISOString().slice(0, 10);
-}
 
 export function buildSeedDataset(now = new Date(), days = 10, seed = 20260924): SeedDataset {
   const rand = prng(seed);
@@ -206,7 +212,7 @@ export function buildSeedDataset(now = new Date(), days = 10, seed = 20260924): 
   const seats: Seat[] = [];
   const reservations: SeedDataset['reservations'] = [];
   const reservationPassenger: number[] = [];
-  const today = localDateParts(now);
+  const today = toBusinessDate(now);
   const usedCodes = new Set<string>();
 
   routes.forEach((route, routeIdx) => {
@@ -216,13 +222,11 @@ export function buildSeedDataset(now = new Date(), days = 10, seed = 20260924): 
     const business = roundTo(economy * 2.6);
 
     for (let day = 0; day < days; day++) {
-      const date = new Date(`${today}T00:00:00-05:00`);
-      date.setUTCDate(date.getUTCDate() + day);
-      const ymd = localDateParts(new Date(date.getTime() + 5 * 3600 * 1000));
+      const ymd = toBusinessDate(new Date(businessDayRange(today).from.getTime() + day * 24 * 3600 * 1000));
 
       slots.forEach((slot, slotIdx) => {
         const flightNumber = `SA${String(100 + pairIdx * 20 + (routeIdx % 2) * 10 + slotIdx).padStart(4, '0')}`;
-        const departureTime = new Date(`${ymd}T${slot}:00-05:00`);
+        const departureTime = new Date(`${ymd}T${slot}:00${BUSINESS_UTC_OFFSET}`);
         const plane = aircraftForRoute(route.distanceKm, routeIdx + slotIdx);
         // Variación de tarifa por día/horario (demanda simulada)
         const factor = 0.85 + rand() * 0.5;

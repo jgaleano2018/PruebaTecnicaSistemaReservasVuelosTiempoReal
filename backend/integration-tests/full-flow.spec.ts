@@ -10,24 +10,21 @@ import { AddressInfo } from 'net';
 import { createServer, Server } from 'http';
 import { io as connect, Socket } from 'socket.io-client';
 
-process.env.LOG_LEVEL = 'silent';
 
 // Monolito modular
 import { composeModules, inMemoryInfrastructure } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_Backend/src/container';
 import { createHttpApp as monolithApp } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_Backend/src/app';
-import { InMemoryBroker, InMemoryEventBus } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_Backend/src/shared/infrastructure/messaging/in-memory-event-bus';
+import { InMemoryBroker, InMemoryEventBus, JwtService } from '@reservas-vuelos/service-kernel';
 import { buildSeedDataset } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_Backend/src/database/seed/seed-data';
 // Payment Service
 import { compose as composePayment } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_PS/src/container';
 import { createHttpApp as paymentApp } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_PS/src/app';
-import { InMemoryEventBus as PsBus } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_PS/src/shared/infrastructure/messaging/in-memory-event-bus';
 import * as PsMem from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_PS/src/infrastructure/persistence/in-memory.repositories';
 import { FakePaymentGateway } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_PS/src/infrastructure/gateway/fake-payment.gateway';
 import { HttpReservationHoldClient } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_PS/src/infrastructure/clients/reservation-hold.client';
 // Flight Management Service
 import { compose as composeFms } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_FMS/src/container';
 import { createHttpApp as fmsApp } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_FMS/src/app';
-import { InMemoryEventBus as FmsBus } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_FMS/src/shared/infrastructure/messaging/in-memory-event-bus';
 import * as FmsMem from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_FMS/src/infrastructure/persistence/in-memory.repositories';
 import { HttpMonolithCatalogClient } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_FMS/src/infrastructure/clients/monolith-catalog.client';
 // Realtime Gateway
@@ -35,8 +32,6 @@ import { RealtimeGatewayService } from '../PruebaTecnicaSistemaReservasVuelosTie
 import { attachSocketServer } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_RG/src/infrastructure/websocket/socket-server';
 import { createHttpApp as rgApp } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_RG/src/app';
 import { buildRoutes as rgRoutes } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_RG/src/infrastructure/http/routes';
-import { InMemoryEventBus as RgBus } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_RG/src/shared/infrastructure/messaging/in-memory-event-bus';
-import { JwtService } from '../PruebaTecnicaSistemaReservasVuelosTiempoReal_RG/src/shared/infrastructure/auth/jwt';
 
 const SECRET = 'integration-secret-key-123456';
 const INTERNAL = 'internal-key';
@@ -100,7 +95,7 @@ describe('Flujo principal de usuario y flujo de eventos (4 servicios)', () => {
         gateway: new FakePaymentGateway(0),
         holds: new HttpReservationHoldClient(MONO),
       },
-      new PsBus('payment-service', broker as any),
+      new InMemoryEventBus('payment-service', broker as any),
       { jwtSecret: SECRET, jwtExpiresIn: '1h' },
     );
     const psServer = createServer(paymentApp(ps.router, { httpLogs: false, service: 'payment-service' }));
@@ -116,7 +111,7 @@ describe('Flujo principal de usuario y flujo de eventos (4 servicios)', () => {
         syncLog: new FmsMem.InMemorySyncLogRepository(),
         catalog: new HttpMonolithCatalogClient(MONO, INTERNAL),
       },
-      new FmsBus('flight-management-service', broker as any),
+      new InMemoryEventBus('flight-management-service', broker as any),
       { jwtSecret: SECRET, jwtExpiresIn: '1h', syncDaysAhead: 5 },
     );
     await fms.syncFlights.execute();
@@ -125,7 +120,7 @@ describe('Flujo principal de usuario y flujo de eventos (4 servicios)', () => {
     FMS = await listen(fmsServer);
 
     // ---- Realtime Gateway ----
-    const rgBus = new RgBus('realtime-gateway', broker as any, true);
+    const rgBus = new InMemoryEventBus('realtime-gateway', broker as any, true);
     const gateway = new RealtimeGatewayService(rgBus.events$, 'rg-test');
     const rgServer = createServer(rgApp(rgRoutes(gateway), {}));
     attachSocketServer(rgServer, gateway, new JwtService(SECRET, '1h'), { corsOrigin: '*', maxSubscriptions: 50 });

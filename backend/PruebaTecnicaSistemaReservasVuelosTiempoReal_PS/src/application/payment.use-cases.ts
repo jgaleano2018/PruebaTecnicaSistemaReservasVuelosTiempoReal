@@ -10,10 +10,14 @@ import {
   SeatReleaseReason,
   UserRole,
 } from '@reservas-vuelos/shared';
-import { Clock } from '../shared/application/clock.port';
-import { EventBus } from '../shared/application/event-bus.port';
-import { ConflictError, ForbiddenError, NotFoundError } from '../shared/domain/errors';
-import { logger } from '../shared/infrastructure/logging/logger';
+import {
+  Clock,
+  EventBus,
+  ConflictError,
+  ForbiddenError,
+  NotFoundError,
+  logger,
+} from '@reservas-vuelos/service-kernel';
 import {
   PaymentGateway,
   PaymentIntentRepository,

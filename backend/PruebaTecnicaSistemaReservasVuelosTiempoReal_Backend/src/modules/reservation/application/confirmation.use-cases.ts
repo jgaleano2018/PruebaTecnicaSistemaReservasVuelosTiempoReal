@@ -6,9 +6,7 @@ import {
   ReservationStatus,
   SeatReleaseReason,
 } from '@reservas-vuelos/shared';
-import { Clock } from '../../../shared/application/clock.port';
-import { EventBus } from '../../../shared/application/event-bus.port';
-import { logger } from '../../../shared/infrastructure/logging/logger';
+import { Clock, EventBus, logger } from '@reservas-vuelos/service-kernel';
 import { generateReservationCode, Reservation } from '../domain/reservation.entities';
 import { CustomerRegistryPort, ReservationRepository, SeatRepository } from '../domain/reservation.ports';
 

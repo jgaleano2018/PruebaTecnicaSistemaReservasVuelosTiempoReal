@@ -1,11 +1,13 @@
 {
   "name": "reservas-vuelos-integration-tests",
   "private": true,
-  "description": "Prueba de integración del flujo principal de usuario y del flujo de eventos (monolito + FMS + Payment + Realtime Gateway) con adaptadores en memoria",
+  "description": "Prueba de integraci\u00f3n del flujo principal de usuario y del flujo de eventos (monolito + FMS + Payment + Realtime Gateway) con adaptadores en memoria",
   "scripts": {
     "test": "jest --runInBand"
   },
   "devDependencies": {
+    "@reservas-vuelos/service-kernel": "file:../shared-kernel",
+    "@reservas-vuelos/shared": "file:../../cliente/shared",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.9.0",
     "jest": "^29.7.0",
@@ -17,6 +19,22 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testTimeout": 30000,
-    "transform": { "^.+\\.ts$": ["ts-jest", { "diagnostics": false, "tsconfig": "tsconfig.json" }] }
+    "transform": {
+      "^.+\\.ts$": [
+        "ts-jest",
+        {
+          "diagnostics": false,
+          "tsconfig": {
+            "esModuleInterop": true,
+            "target": "ES2022",
+            "module": "commonjs",
+            "strict": false
+          }
+        }
+      ]
+    },
+    "setupFiles": [
+      "<rootDir>/setup-env.ts"
+    ]
   }
 }

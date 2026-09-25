@@ -12,11 +12,13 @@ src/
 │  ├─ analytics/    Módulo de Dashboard: métricas, ocupación, demanda y reportes
 │  └─ auth/         Autenticación y autorización (JWT)
 │     └─ (cada módulo: domain/ · application/ · infrastructure/{http,persistence,messaging})
-├─ shared/          Capa de infraestructura y comunicación: JWT, errores, validación, logs, Kafka, SSE
 ├─ database/seed/   Creación de colecciones y carga inicial
 ├─ container.ts     Composition root (puertos ↔ adaptadores)
 └─ main.ts
 ```
+
+La capa de infraestructura y comunicación (JWT, errores, validación, logs, Kafka, SSE) está en el paquete común
+[`backend/shared-kernel`](../shared-kernel/README.md) y los contratos en [`cliente/shared`](../../cliente/shared/README.md).
 
 ## Base de datos `reservas_vuelos_db`
 
@@ -62,6 +64,6 @@ Eventos: publica `SeatLocked`, `SeatReleased`, `ReservationConfirmed` y `Reserva
 ```bash
 docker compose up -d --build                          # monolito + Mongo + Kafka
 # o en local (con la infraestructura arriba):
-npm run build:shared && npm install && cp .env.example .env && npm run dev
+npm run build:deps && npm install && cp .env.example .env && npm run dev
 npm test                                              # pruebas e2e con adaptadores en memoria
 ```

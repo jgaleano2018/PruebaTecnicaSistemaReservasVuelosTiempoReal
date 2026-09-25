@@ -1,6 +1,4 @@
-import { Clock, systemClock } from './shared/application/clock.port';
-import { EventBus } from './shared/application/event-bus.port';
-import { JwtService } from './shared/infrastructure/auth/jwt';
+import { Clock, systemClock, EventBus, JwtService } from '@reservas-vuelos/service-kernel';
 import {
   CreateCheckoutHoldUseCase,
   PaymentEventHandlers,

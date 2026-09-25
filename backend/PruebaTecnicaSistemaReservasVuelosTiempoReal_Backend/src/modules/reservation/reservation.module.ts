@@ -1,7 +1,5 @@
 import { Router } from 'express';
-import { Clock } from '../../shared/application/clock.port';
-import { EventBus } from '../../shared/application/event-bus.port';
-import { JwtService } from '../../shared/infrastructure/auth/jwt';
+import { Clock, EventBus, JwtService } from '@reservas-vuelos/service-kernel';
 import { CancelReservationOnRefundUseCase, ConfirmReservationUseCase } from './application/confirmation.use-cases';
 import { GetReservationUseCase, GetTicketUseCase, ListMyReservationsUseCase } from './application/reservation-query.use-cases';
 import {
