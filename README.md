@@ -172,6 +172,7 @@ La documentación detallada está en [`compartidas/docs/`](compartidas/docs):
 |---|---|
 | [`architecture.md`](compartidas/docs/architecture.md) | Decisiones de arquitectura, capas hexagonales, eventos Kafka, anti double booking, tiempo real, secuencias |
 | [`ejecucion-local.md`](compartidas/docs/ejecucion-local.md) | Guía paso a paso de ejecución, variables de entorno y solución de problemas |
+| [`decisiones-tecnicas.md`](compartidas/docs/decisiones-tecnicas.md) | Justificación de librerías, protocolos, persistencia y caché (backend, frontend e interacción) |
 | [`api.md`](compartidas/docs/api.md) | Endpoints REST de los 4 servicios y protocolo WebSocket/SSE |
 | [`validacion-requisitos.md`](compartidas/docs/validacion-requisitos.md) | Cómo se cumple cada requisito de la prueba y dónde se evidencia |
 

@@ -133,3 +133,53 @@ sequenceDiagram
 - Barrido de expiración de bloqueos con `interval + exhaustMap`.
 - Proyección del dashboard y SSE como streams (`filter`, `map`, `scan`, `share`).
 - Sincronización inicial del FMS con `retry` exponencial hasta que el monolito responde.
+
+
+## Diagrama de Arquitectura:
+
+![alt text](image.png)
+
+
+## Justificación de la Arquitectura:
+
+Se optó por un hibrido entre Monolito Modular y Microservicios ya que la operación area requiere de una aplicación central que permita de la gestión centralizada de la información de las entidades (Reservas, Vuelos, Clientes y de forma sincrona con gestión en la base de datos no distribuida sino centralizada mediante MongoDB y que cumpla con: Permite garantizar la ausencia de *double booking* con operaciones atómicas, sin transacciones distribuidas ni 2PC ).
+
+Los microservicios facilitan el proceso de pagos y reembolsos de las reservas de los vuelos, gestión avanzada de vuelos (Cambios, cancelaciones, estado de vuelo), sincronización con otras aerolíneas y Realtime Gateway para escalar el control del bloque de asientos y disponibilidad de las reservas de los vuelos.
+
+
+## Manejo de Concurrencia y Estado en Tiempo Real:
+
+### Desde el punto de vista técnico revisar estos apartados de de este documento actual:
+
+- Eventos (Kafka).
+- Anti double booking.
+- Secuencia: bloqueo, pago y confirmación.
+- Tiempo Real.
+
+### Desde un enfoque funcional el manejo es el siguiente:
+
+- Igresar al proyecto de Backend en Visual Studio Code y habiendo iniciado Docker Desktop.
+
+```Powershell
+cd C:\Users\USUARIO\Documents\PruebaTecnicaDavivienda\PruebaTecnicaSistemaReservasVuelosTiempoReal\frontend
+npm install
+Copy-Item .env.example .env
+npm run dev
+```
+
+- Abre http://localhost:5173. Los cambios en el código se ven al instante.
+- Para probar el tiempo real, usa dos ventanas: Abre la app en dos ventanas; puede ser una normal y otra de incógnito.
+- Inicia sesión con cliente@skyandes.com / Cliente123* en una y con cliente2@skyandes.com / Cliente123* en la otra. Hay botones de "Usuarios de prueba" que llenan el formulario.
+- En ambas busca el mismo vuelo (por ejemplo BOG → CTG para mañana) y abre el mapa de asientos.
+- Selecciona un asiento en la ventana 1. En la ventana 2 aparece al instante como bloqueado (rayado ámbar); si intenta tomarlo, recibe el aviso de conflicto.
+- En la ventana 1, pulsa "Continuar con el pago". Verás la cuenta regresiva del bloqueo.
+- Paga con la tarjeta rechazada 4000 0000 0000 0002: debe mostrar el error y conservar el bloqueo.
+- Luego paga con la aprobada 4111 1111 1111 1111: debe mostrar el boleto con el código de reserva, y en la ventana 2 el asiento pasa a ocupado.
+- Si en vez de pagar dejas vencer la cuenta regresiva, el asiento se libera solo en ambas ventanas.
+- Abre /dashboard con espectador@skyandes.com / Espectador123* para ver la ocupación y los eventos en vivo.
+- Con admin@skyandes.com / Admin123*, en el monitor del vuelo cámbialo a Retrasado. La lista de resultados de las otras ventanas se actualiza sola.
+
+
+## Decisiones Técnicas Clave:
+
+Remitirse al archivo /decisiones-tecnicas.md
