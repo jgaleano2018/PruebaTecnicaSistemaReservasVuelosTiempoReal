@@ -142,7 +142,7 @@ sequenceDiagram
 
 ## Justificación de la Arquitectura:
 
-Se optó por un hibrido entre Monolito Modular y Microservicios ya que la operación area requiere de una aplicación central que permita de la gestión centralizada de la información de las entidades (Reservas, Vuelos, Clientes y de forma sincrona con gestión en la base de datos no distribuida sino centralizada mediante MongoDB y que cumpla con: Permite garantizar la ausencia de *double booking* con operaciones atómicas, sin transacciones distribuidas ni 2PC ).
+Se optó por un hibrido entre Monolito Modular y Microservicios ya que la operación area requiere de una aplicación central que permita de la gestión centralizada de la información de las entidades (Reservas, Vuelos, Clientes y de forma sincrona con gestión en la base de datos no distribuida sino centralizada mediante MongoDB y que cumpla con: Permite garantizar la ausencia de *double booking* con operaciones atómicas, sin transacciones distribuidas ni 2PC y garantizar el bloqueo de los asientos; además del uso de KAFKA + WebSockets). 
 
 Los microservicios facilitan el proceso de pagos y reembolsos de las reservas de los vuelos, gestión avanzada de vuelos (Cambios, cancelaciones, estado de vuelo), sincronización con otras aerolíneas y Realtime Gateway para escalar el control del bloque de asientos y disponibilidad de las reservas de los vuelos.
 
