@@ -1,5 +1,5 @@
 import { ApiErrorResponse, ApiResponse, SeatHoldDto } from '@reservas-vuelos/shared';
-import { DomainError } from '@reservas-vuelos/service-kernel';
+import { DomainError } from '../../shared/domain/errors';
 import { ReservationHoldClient } from '../../domain/payment';
 
 /** Adaptador HTTP hacia el módulo de Reservas del monolito (propaga el JWT del cliente). */

@@ -1,0 +1,155 @@
+/*
+ * Design tokens — SkyAndes
+ * Paleta de estados de asiento/ocupación validada (lightness, croma, separación CVD y contraste)
+ * para superficie clara y oscura; cada estado lleva además textura/ícono (nunca solo color).
+ */
+:root {
+  color-scheme: light;
+
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Manrope', 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* Superficies */
+  --bg: #f5f6f3;
+  --surface: #fcfcfb;
+  --surface-2: #eef0ec;
+  --surface-raised: #ffffff;
+  --border: #dcdfd8;
+  --border-strong: #b9bdb4;
+
+  /* Tinta */
+  --ink: #16202e;
+  --ink-2: #445063;
+  --ink-3: #6b7587;
+  --ink-inverse: #ffffff;
+
+  /* Marca */
+  --brand: #1d3b72;
+  --brand-strong: #132a55;
+  --brand-soft: #e3e9f5;
+  --on-brand: #ffffff;
+  --accent: #d64a3c;
+  --accent-soft: #fbe7e3;
+  --focus: #2f6fed;
+
+  /* Estados de asiento / ocupación (validados) */
+  --seat-available: #0f8a73;
+  --seat-available-soft: #dcf1ec;
+  --seat-locked: #b97a00;
+  --seat-locked-soft: #f7ecd4;
+  --seat-occupied: #4353c9;
+  --seat-occupied-soft: #e2e5f8;
+  --seat-mine: #c2336b;
+  --seat-mine-soft: #f9e0ea;
+
+  /* Estado semántico */
+  --success: #13795b;
+  --success-soft: #dff2ea;
+  --warning: #a86200;
+  --warning-soft: #fbeed7;
+  --danger: #b42318;
+  --danger-soft: #fde6e3;
+  --info: #1f5fbf;
+  --info-soft: #e1ebfb;
+  --neutral-soft: #e9ebe7;
+
+  /* Forma y espacio */
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --shadow-sm: 0 1px 2px rgb(22 32 46 / 0.06);
+  --shadow: 0 4px 16px rgb(22 32 46 / 0.08), 0 1px 3px rgb(22 32 46 / 0.06);
+  --shadow-lg: 0 18px 48px rgb(22 32 46 / 0.16);
+  --container: 1200px;
+  --header-h: 64px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #111317;
+    --surface: #1a1a19;
+    --surface-2: #23252a;
+    --surface-raised: #202226;
+    --border: #33363d;
+    --border-strong: #4b4f58;
+    --ink: #eef0f3;
+    --ink-2: #b8bfca;
+    --ink-3: #8a92a0;
+    --brand: #8fb0ff;
+    --brand-strong: #b6ccff;
+    --brand-soft: #1f2a44;
+    --on-brand: #0d1526;
+    --accent: #ff7b6b;
+    --accent-soft: #3a211e;
+    --focus: #8fb0ff;
+    --seat-available: #2aa58c;
+    --seat-available-soft: #173a33;
+    --seat-locked: #b0791a;
+    --seat-locked-soft: #3b2e16;
+    --seat-occupied: #6f7ef0;
+    --seat-occupied-soft: #252b52;
+    --seat-mine: #e0679a;
+    --seat-mine-soft: #45202f;
+    --success: #4cc79a;
+    --success-soft: #16352a;
+    --warning: #e6a54a;
+    --warning-soft: #3a2b14;
+    --danger: #ff8a80;
+    --danger-soft: #3d1b19;
+    --info: #86b1ff;
+    --info-soft: #1c2b47;
+    --neutral-soft: #2a2d33;
+    --shadow: 0 4px 16px rgb(0 0 0 / 0.35);
+    --shadow-lg: 0 18px 48px rgb(0 0 0 / 0.5);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #111317;
+  --surface: #1a1a19;
+  --surface-2: #23252a;
+  --surface-raised: #202226;
+  --border: #33363d;
+  --border-strong: #4b4f58;
+  --ink: #eef0f3;
+  --ink-2: #b8bfca;
+  --ink-3: #8a92a0;
+  --brand: #8fb0ff;
+  --brand-strong: #b6ccff;
+  --brand-soft: #1f2a44;
+  --on-brand: #0d1526;
+  --accent: #ff7b6b;
+  --accent-soft: #3a211e;
+  --focus: #8fb0ff;
+  --seat-available: #2aa58c;
+  --seat-available-soft: #173a33;
+  --seat-locked: #b0791a;
+  --seat-locked-soft: #3b2e16;
+  --seat-occupied: #6f7ef0;
+  --seat-occupied-soft: #252b52;
+  --seat-mine: #e0679a;
+  --seat-mine-soft: #45202f;
+  --success: #4cc79a;
+  --success-soft: #16352a;
+  --warning: #e6a54a;
+  --warning-soft: #3a2b14;
+  --danger: #ff8a80;
+  --danger-soft: #3d1b19;
+  --info: #86b1ff;
+  --info-soft: #1c2b47;
+  --neutral-soft: #2a2d33;
+  --shadow: 0 4px 16px rgb(0 0 0 / 0.35);
+  --shadow-lg: 0 18px 48px rgb(0 0 0 / 0.5);
+}

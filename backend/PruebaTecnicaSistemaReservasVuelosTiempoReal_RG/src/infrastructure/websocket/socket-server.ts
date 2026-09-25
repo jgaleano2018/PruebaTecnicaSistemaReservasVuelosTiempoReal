@@ -9,7 +9,8 @@ import {
   ServerSocketEvents,
   ServerToClientEvents,
 } from '@reservas-vuelos/shared';
-import { JwtService, logger } from '@reservas-vuelos/service-kernel';
+import { JwtService } from '../../shared/infrastructure/auth/jwt';
+import { logger } from '../../shared/infrastructure/logging/logger';
 import { RealtimeGatewayService } from '../../application/realtime-gateway.service';
 
 type GatewaySocket = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, { user?: JwtPayloadDto; subs: number }>;

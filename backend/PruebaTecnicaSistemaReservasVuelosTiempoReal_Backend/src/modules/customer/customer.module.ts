@@ -1,4 +1,4 @@
-import { JwtService } from '@reservas-vuelos/service-kernel';
+import { JwtService } from '../../shared/infrastructure/auth/jwt';
 import { CustomerQueries, CustomerRegistryService } from './application/customer.use-cases';
 import { CustomerRepository, ReservationHistoryPort } from './domain/customer';
 import { buildCustomerRouter } from './infrastructure/http/customer.routes';

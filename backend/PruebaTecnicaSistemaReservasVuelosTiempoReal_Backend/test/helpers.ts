@@ -1,6 +1,7 @@
-import { Clock, InMemoryBroker, InMemoryEventBus } from '@reservas-vuelos/service-kernel';
+import { Clock } from '../src/shared/application/clock.port';
 import { composeModules, inMemoryInfrastructure } from '../src/container';
 import { createHttpApp } from '../src/app';
+import { InMemoryBroker, InMemoryEventBus } from '../src/shared/infrastructure/messaging/in-memory-event-bus';
 import { buildSeedDataset } from '../src/database/seed/seed-data';
 import { FlightStatus } from '@reservas-vuelos/shared';
 

@@ -1,15 +1,17 @@
 import {
   AirportDto,
-  businessDayRange,
   FlightDto,
   FlightSearchQueryInput,
   FlightStatus,
   FlightStatusChangedPayload,
   SeatAvailabilityDto,
 } from '@reservas-vuelos/shared';
-import { NotFoundError } from '@reservas-vuelos/service-kernel';
+import { NotFoundError } from '../../../shared/domain/errors';
 import { Airport, Flight } from '../domain/flight.entity';
 import { CatalogRepository, FlightRepository, SeatAvailabilityPort } from '../domain/flight.ports';
+
+/** Zona horaria de negocio (Colombia) para interpretar la fecha de búsqueda. */
+export const BUSINESS_UTC_OFFSET = '-05:00';
 
 const EMPTY_AVAILABILITY: SeatAvailabilityDto = { total: 0, available: 0, locked: 0, occupied: 0 };
 
@@ -45,7 +47,8 @@ export class SearchFlightsUseCase {
   ) {}
 
   async execute(query: FlightSearchQueryInput): Promise<FlightDto[]> {
-    const { from, to } = businessDayRange(query.date);
+    const from = new Date(`${query.date}T00:00:00${BUSINESS_UTC_OFFSET}`);
+    const to = new Date(from.getTime() + 24 * 60 * 60 * 1000);
 
     let flights = await this.flights.search({ origin: query.origin, destination: query.destination, from, to });
 

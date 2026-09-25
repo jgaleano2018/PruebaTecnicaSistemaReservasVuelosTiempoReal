@@ -1,5 +1,5 @@
 import { ReservationDto, TicketDto, UserRole } from '@reservas-vuelos/shared';
-import { ForbiddenError, NotFoundError } from '@reservas-vuelos/service-kernel';
+import { ForbiddenError, NotFoundError } from '../../../shared/domain/errors';
 import { Reservation } from '../domain/reservation.entities';
 import { FlightReaderPort, ReservationRepository } from '../domain/reservation.ports';
 

@@ -1,6 +1,8 @@
 import { filter } from 'rxjs';
 import { EventTypes, FlightStatusChangedPayload } from '@reservas-vuelos/shared';
-import { Clock, systemClock, EventBus, JwtService } from '@reservas-vuelos/service-kernel';
+import { Clock, systemClock } from './shared/application/clock.port';
+import { EventBus } from './shared/application/event-bus.port';
+import { JwtService } from './shared/infrastructure/auth/jwt';
 import { AirlineSyncUseCase, ChangeFlightStatusUseCase, FlightQueries, SyncFlightsUseCase } from './application/flight-management.use-cases';
 import { DashboardService } from './application/dashboard.use-cases';
 import { FlightCatalogClient, ManagedFlightRepository, OccupancyRepository, StatusHistoryRepository, SyncLogRepository } from './domain/ports';

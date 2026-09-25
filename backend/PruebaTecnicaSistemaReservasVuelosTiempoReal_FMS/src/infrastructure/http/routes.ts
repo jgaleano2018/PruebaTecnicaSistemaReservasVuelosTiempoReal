@@ -1,16 +1,9 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { businessDayRange, FlightStatus, updateFlightStatusSchema, UserRole } from '@reservas-vuelos/shared';
-import {
-  asyncHandler,
-  ok,
-  validate,
-  validated,
-  authenticate,
-  authorize,
-  JwtService,
-  streamSse,
-} from '@reservas-vuelos/service-kernel';
+import { FlightStatus, updateFlightStatusSchema, UpdateFlightStatusInput, UserRole } from '@reservas-vuelos/shared';
+import { asyncHandler, ok, validate, validated } from '../../shared/infrastructure/http/http-utils';
+import { authenticate, authorize, JwtService } from '../../shared/infrastructure/auth/jwt';
+import { streamSse } from '../../shared/infrastructure/http/sse';
 import { AirlineSyncUseCase, ChangeFlightStatusUseCase, FlightQueries, SyncFlightsUseCase } from '../../application/flight-management.use-cases';
 import { DashboardService } from '../../application/dashboard.use-cases';
 import { SyncLogRepository } from '../../domain/ports';
@@ -48,7 +41,10 @@ const airlineFeed = z.object({
 });
 
 function range(q: z.infer<typeof listQuery>) {
-  if (q.date) return businessDayRange(q.date);
+  if (q.date) {
+    const from = new Date(`${q.date}T00:00:00-05:00`);
+    return { from, to: new Date(from.getTime() + 24 * 3600e3) };
+  }
   return { from: q.from, to: q.to };
 }
 
@@ -61,7 +57,7 @@ export function buildRoutes(d: RoutesDeps): Router {
     '/flights',
     validate(listQuery, 'query'),
     asyncHandler(async (req, res) => {
-      const q = validated<typeof listQuery>(req, 'query');
+      const q = validated<typeof listQuery>(req, 'query') as z.infer<typeof listQuery>;
       const flights = await d.queries.list({ ...range(q), status: q.status, origin: q.origin, destination: q.destination });
       ok(res, flights, 200, { count: flights.length });
     }),
@@ -77,7 +73,7 @@ export function buildRoutes(d: RoutesDeps): Router {
     ...admin,
     validate(updateFlightStatusSchema),
     asyncHandler(async (req, res) => {
-      const body = validated<typeof updateFlightStatusSchema>(req);
+      const body = validated<typeof updateFlightStatusSchema>(req) as UpdateFlightStatusInput;
       ok(res, await d.changeStatus.execute(req.params.flightId, body, req.user!.email));
     }),
   );
@@ -91,7 +87,7 @@ export function buildRoutes(d: RoutesDeps): Router {
     ...admin,
     validate(airlineFeed),
     asyncHandler(async (req, res) => {
-      const body = validated<typeof airlineFeed>(req);
+      const body = validated<typeof airlineFeed>(req) as z.infer<typeof airlineFeed>;
       ok(res, await d.airlineSync.execute(body.updates));
     }),
   );
@@ -111,7 +107,7 @@ export function buildRoutes(d: RoutesDeps): Router {
     '/dashboard/flights',
     validate(listQuery, 'query'),
     asyncHandler(async (req, res) => {
-      const q = validated<typeof listQuery>(req, 'query');
+      const q = validated<typeof listQuery>(req, 'query') as z.infer<typeof listQuery>;
       ok(res, await d.dashboard.listFlights(range(q)));
     }),
   );

@@ -1,4 +1,4 @@
-import { CabinClass, FlightStatus, NON_BOOKABLE_FLIGHT_STATUSES } from '@reservas-vuelos/shared';
+import { CabinClass, FlightStatus } from '@reservas-vuelos/shared';
 
 export interface Fare {
   cabinClass: CabinClass;
@@ -54,7 +54,25 @@ export interface Aircraft {
   layout: SeatLayoutSection[];
 }
 
+const NON_BOOKABLE: FlightStatus[] = [
+  FlightStatus.CANCELLED,
+  FlightStatus.DEPARTED,
+  FlightStatus.ARRIVED,
+  FlightStatus.SOLD_OUT,
+];
+
 /** Regla de dominio: un vuelo admite bloqueos/reservas si no está cancelado, agotado o ya salió. */
 export function isBookable(flight: Pick<Flight, 'status' | 'departureTime'>, now: Date): boolean {
-  return !NON_BOOKABLE_FLIGHT_STATUSES.includes(flight.status) && flight.departureTime.getTime() > now.getTime();
+  return !NON_BOOKABLE.includes(flight.status) && flight.departureTime.getTime() > now.getTime();
 }
+
+/** Transiciones de estado permitidas (usadas por el Flight Management Service y validadas aquí). */
+export const ALLOWED_STATUS_TRANSITIONS: Record<FlightStatus, FlightStatus[]> = {
+  [FlightStatus.SCHEDULED]: [FlightStatus.DELAYED, FlightStatus.CANCELLED, FlightStatus.BOARDING, FlightStatus.SOLD_OUT],
+  [FlightStatus.DELAYED]: [FlightStatus.DELAYED, FlightStatus.SCHEDULED, FlightStatus.CANCELLED, FlightStatus.BOARDING, FlightStatus.SOLD_OUT],
+  [FlightStatus.SOLD_OUT]: [FlightStatus.SCHEDULED, FlightStatus.DELAYED, FlightStatus.CANCELLED, FlightStatus.BOARDING],
+  [FlightStatus.BOARDING]: [FlightStatus.DEPARTED, FlightStatus.DELAYED, FlightStatus.CANCELLED],
+  [FlightStatus.DEPARTED]: [FlightStatus.ARRIVED],
+  [FlightStatus.CANCELLED]: [],
+  [FlightStatus.ARRIVED]: [],
+};

@@ -1,5 +1,5 @@
 import { catchError, EMPTY, exhaustMap, from, interval, Subscription } from 'rxjs';
-import { logger } from '@reservas-vuelos/service-kernel';
+import { logger } from '../../../../shared/infrastructure/logging/logger';
 import { ExpireSeatHoldsUseCase } from '../../application/seat-hold.use-cases';
 
 /**

@@ -1,5 +1,7 @@
 import { AirportDto, EventTypes, FlightStatus, FlightStatusHistoryDto, UpdateFlightStatusInput } from '@reservas-vuelos/shared';
-import { Clock, EventBus, ConflictError, NotFoundError } from '@reservas-vuelos/service-kernel';
+import { Clock } from '../shared/application/clock.port';
+import { EventBus } from '../shared/application/event-bus.port';
+import { ConflictError, NotFoundError } from '../shared/domain/errors';
 import { assertTransition, ManagedFlight } from '../domain/managed-flight';
 import { FlightCatalogClient, ManagedFlightRepository, OccupancyRepository, StatusHistoryRepository, SyncLogRepository } from '../domain/ports';
 

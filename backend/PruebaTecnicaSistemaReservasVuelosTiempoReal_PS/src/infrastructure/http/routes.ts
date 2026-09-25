@@ -1,20 +1,15 @@
 import { Router } from 'express';
 import {
   createSeatHoldSchema,
+  CreateSeatHoldInput,
   PaymentStatus,
   processPaymentSchema,
+  ProcessPaymentInput,
   refundSchema,
   UserRole,
 } from '@reservas-vuelos/shared';
-import {
-  asyncHandler,
-  ok,
-  validate,
-  validated,
-  authenticate,
-  authorize,
-  JwtService,
-} from '@reservas-vuelos/service-kernel';
+import { asyncHandler, ok, validate, validated } from '../../shared/infrastructure/http/http-utils';
+import { authenticate, authorize, JwtService } from '../../shared/infrastructure/auth/jwt';
 import {
   CreateCheckoutHoldUseCase,
   PaymentQueries,
@@ -48,7 +43,7 @@ export function buildRoutes(d: RoutesDeps): Router {
     buyer,
     validate(createSeatHoldSchema),
     asyncHandler(async (req, res) => {
-      const body = validated<typeof createSeatHoldSchema>(req);
+      const body = validated<typeof createSeatHoldSchema>(req) as CreateSeatHoldInput;
       ok(res, await d.createHold.execute(body, req.user!, bearer(req.headers.authorization)), 201);
     }),
   );
@@ -67,7 +62,7 @@ export function buildRoutes(d: RoutesDeps): Router {
     buyer,
     validate(processPaymentSchema),
     asyncHandler(async (req, res) => {
-      const body = validated<typeof processPaymentSchema>(req);
+      const body = validated<typeof processPaymentSchema>(req) as ProcessPaymentInput;
       const payment = await d.processPayment.execute(body, req.user!);
       ok(res, payment, payment.status === PaymentStatus.APPROVED ? 201 : 402, {
         next:
@@ -86,7 +81,7 @@ export function buildRoutes(d: RoutesDeps): Router {
     '/payments/:paymentId/refunds',
     validate(refundSchema),
     asyncHandler(async (req, res) => {
-      const body = validated<typeof refundSchema>(req);
+      const body = validated<typeof refundSchema>(req) as { reason: string };
       ok(res, await d.refund.execute(req.params.paymentId, body.reason, req.user!), 201);
     }),
   );

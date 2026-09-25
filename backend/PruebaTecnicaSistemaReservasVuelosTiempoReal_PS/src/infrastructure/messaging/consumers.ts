@@ -1,5 +1,5 @@
 import { EventTypes, FlightStatus } from '@reservas-vuelos/shared';
-import { EventBus } from '@reservas-vuelos/service-kernel';
+import { EventBus } from '../../shared/application/event-bus.port';
 import { PaymentEventHandlers } from '../../application/payment.use-cases';
 
 /** Suscripciones Kafka del Payment Service. */

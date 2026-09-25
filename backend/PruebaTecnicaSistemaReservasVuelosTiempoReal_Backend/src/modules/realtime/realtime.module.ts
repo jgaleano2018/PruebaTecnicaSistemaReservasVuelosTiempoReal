@@ -1,5 +1,5 @@
 import { EventTypes } from '@reservas-vuelos/shared';
-import { EventBus } from '@reservas-vuelos/service-kernel';
+import { EventBus } from '../../shared/application/event-bus.port';
 import { RealtimeHub } from './application/realtime-hub';
 import { buildRealtimeRouter } from './infrastructure/http/realtime.routes';
 

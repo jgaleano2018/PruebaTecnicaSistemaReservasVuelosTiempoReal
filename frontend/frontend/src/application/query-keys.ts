@@ -1,0 +1,31 @@
+import type { FlightSearchQueryDto } from '@reservas-vuelos/shared';
+
+/** Claves de caché centralizadas (React Query) para lecturas, invalidaciones y actualizaciones en vivo. */
+export const queryKeys = {
+  airports: ['catalog', 'airports'] as const,
+  routes: ['catalog', 'routes'] as const,
+  aircraft: ['catalog', 'aircraft'] as const,
+  flightSearch: (q: FlightSearchQueryDto) => ['flights', 'search', q] as const,
+  flightSearchAll: ['flights', 'search'] as const,
+  flight: (id: string) => ['flights', 'detail', id] as const,
+  seatMap: (flightId: string, userId?: string) => ['seats', flightId, userId ?? 'guest'] as const,
+  seatMapAll: (flightId: string) => ['seats', flightId] as const,
+  myReservations: ['reservations', 'me'] as const,
+  reservation: (id: string) => ['reservations', id] as const,
+  ticket: (id: string) => ['tickets', id] as const,
+  myPayments: ['payments', 'me'] as const,
+  myCustomers: ['customers', 'me'] as const,
+  customers: (limit: number, skip: number) => ['customers', 'list', limit, skip] as const,
+  customerReservations: (id: string) => ['customers', id, 'reservations'] as const,
+  dashboardOverview: (hours: number) => ['dashboard', 'overview', hours] as const,
+  dashboardFlights: (date: string) => ['dashboard', 'flights', date] as const,
+  occupancy: (flightId: string) => ['dashboard', 'occupancy', flightId] as const,
+  flightMetrics: (flightId: string) => ['analytics', 'metrics', flightId] as const,
+  statusHistory: (flightId: string) => ['fms', 'history', flightId] as const,
+  managedFlights: (filter: object) => ['fms', 'flights', filter] as const,
+  managedFlightsAll: ['fms', 'flights'] as const,
+  syncLog: ['fms', 'sync-log'] as const,
+  summary: ['analytics', 'summary'] as const,
+  demand: ['analytics', 'demand'] as const,
+  realtimeStatus: ['realtime', 'status'] as const,
+};

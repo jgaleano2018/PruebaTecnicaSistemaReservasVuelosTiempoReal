@@ -1,5 +1,5 @@
 import { env } from '../../config/env';
-import { connectMongo, disconnectMongo } from '@reservas-vuelos/service-kernel/database';
+import { connectMongo, disconnectMongo } from '../../shared/infrastructure/database/mongo';
 import { seedDatabase } from './seed';
 
 /** npm run seed            -> carga si está vacía

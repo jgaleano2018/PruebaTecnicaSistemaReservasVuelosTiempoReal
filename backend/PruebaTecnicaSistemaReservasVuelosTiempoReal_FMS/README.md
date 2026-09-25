@@ -30,7 +30,6 @@ con las colecciones `vuelos_gestion`, `ocupacion_vuelos`, `historial_estados` y 
 ## Ejecutar
 
 ```bash
-docker compose up -d --build                                   # servicio + Kafka + MongoDB
-# o local: npm run build:deps && npm install && cp .env.example .env && npm run dev
+docker compose up -d --build
 npm test
 ```

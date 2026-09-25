@@ -3,7 +3,7 @@ import { firstValueFrom, take, toArray } from 'rxjs';
 import { EventTypes, FlightDto, FlightStatus, SeatStatus, UserRole } from '@reservas-vuelos/shared';
 import { compose } from '../src/container';
 import { createHttpApp } from '../src/app';
-import { InMemoryBroker, InMemoryEventBus } from '@reservas-vuelos/service-kernel';
+import { InMemoryBroker, InMemoryEventBus } from '../src/shared/infrastructure/messaging/in-memory-event-bus';
 import {
   InMemoryManagedFlightRepository,
   InMemoryOccupancyRepository,
@@ -12,6 +12,7 @@ import {
 } from '../src/infrastructure/persistence/in-memory.repositories';
 import { FlightCatalogClient } from '../src/domain/ports';
 
+process.env.LOG_LEVEL = 'silent';
 
 const departure = new Date(Date.now() + 5 * 3600e3);
 const flight: FlightDto = {

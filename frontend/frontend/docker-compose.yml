@@ -1,0 +1,21 @@
+# Frontend React (Web + Dashboard/Admin) servido por nginx en http://localhost:8080
+# Uso independiente: cd frontend && docker compose up -d --build   (requiere el backend en ejecución)
+# También se incluye desde backend/docker-compose.yml para levantar todo el sistema con un solo comando.
+name: reservas-vuelos
+
+services:
+  frontend:
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_MONOLITH_URL: ${VITE_MONOLITH_URL:-http://localhost:3000/api/v1}
+        VITE_FMS_URL: ${VITE_FMS_URL:-http://localhost:3001/api/v1}
+        VITE_PAYMENT_URL: ${VITE_PAYMENT_URL:-http://localhost:3002/api/v1}
+        VITE_REALTIME_URL: ${VITE_REALTIME_URL:-http://localhost:4000}
+        VITE_REALTIME_TRANSPORT: ${VITE_REALTIME_TRANSPORT:-websocket}
+    image: reservas-vuelos/frontend:latest
+    container_name: reservas-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"

@@ -1,15 +1,8 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { UserRole } from '@reservas-vuelos/shared';
-import {
-  asyncHandler,
-  ok,
-  validate,
-  validated,
-  authenticate,
-  authorize,
-  JwtService,
-} from '@reservas-vuelos/service-kernel';
+import { asyncHandler, ok, validate, validated } from '../../../../shared/infrastructure/http/http-utils';
+import { authenticate, authorize, JwtService } from '../../../../shared/infrastructure/auth/jwt';
 import { AnalyticsUseCases } from '../../application/analytics.use-cases';
 
 const rangeSchema = z.object({
@@ -29,7 +22,7 @@ export function buildAnalyticsRouter(jwt: JwtService, a: AnalyticsUseCases): Rou
     authorize(UserRole.ADMIN),
     validate(rangeSchema, 'query'),
     asyncHandler(async (req, res) => {
-      const q = validated<typeof rangeSchema>(req, 'query');
+      const q = validated<typeof rangeSchema>(req, 'query') as z.infer<typeof rangeSchema>;
       ok(res, await a.demand(q.from, q.to));
     }),
   );

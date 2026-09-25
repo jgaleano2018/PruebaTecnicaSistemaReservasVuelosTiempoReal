@@ -1,4 +1,6 @@
-import { Clock, systemClock, EventBus, JwtService } from '@reservas-vuelos/service-kernel';
+import { Clock, systemClock } from './shared/application/clock.port';
+import { EventBus } from './shared/application/event-bus.port';
+import { JwtService } from './shared/infrastructure/auth/jwt';
 import { CatalogRepository, FlightRepository } from './modules/flight/domain/flight.ports';
 import { ReservationRepository, SeatRepository } from './modules/reservation/domain/reservation.ports';
 import { CustomerRepository } from './modules/customer/domain/customer';

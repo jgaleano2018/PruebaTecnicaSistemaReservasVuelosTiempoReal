@@ -5,7 +5,9 @@ import {
   SeatHoldDto,
   SeatReleaseReason,
 } from '@reservas-vuelos/shared';
-import { Clock, EventBus, ConflictError, ForbiddenError, NotFoundError } from '@reservas-vuelos/service-kernel';
+import { Clock } from '../../../shared/application/clock.port';
+import { EventBus } from '../../../shared/application/event-bus.port';
+import { ConflictError, ForbiddenError, NotFoundError } from '../../../shared/domain/errors';
 import { isBookable } from '../../flight/domain/flight.entity';
 import { Reservation } from '../domain/reservation.entities';
 import { FlightReaderPort, ReservationRepository, SeatRepository } from '../domain/reservation.ports';

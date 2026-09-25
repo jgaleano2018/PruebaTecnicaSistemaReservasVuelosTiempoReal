@@ -1,4 +1,4 @@
-import { JwtService } from '@reservas-vuelos/service-kernel';
+import { JwtService } from '../../shared/infrastructure/auth/jwt';
 import { SeatAvailabilityPort } from '../flight/domain/flight.ports';
 import { AnalyticsUseCases } from './application/analytics.use-cases';
 import { AnalyticsReadModel } from './domain/analytics.ports';

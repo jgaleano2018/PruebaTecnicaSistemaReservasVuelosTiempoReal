@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { map } from 'rxjs';
 import { Rooms } from '@reservas-vuelos/shared';
-import { ok, streamSse } from '@reservas-vuelos/service-kernel';
+import { ok } from '../../shared/infrastructure/http/http-utils';
+import { streamSse } from '../../shared/infrastructure/http/sse';
 import { RealtimeGatewayService } from '../../application/realtime-gateway.service';
 
 /** Transporte alterno SSE (Server-Sent Events) para clientes que no usan WebSocket. */

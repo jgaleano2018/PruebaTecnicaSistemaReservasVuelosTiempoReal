@@ -2,6 +2,7 @@ import request from 'supertest';
 import { EventTypes, FlightStatus, PaymentStatus, ReservationStatus, SeatStatus } from '@reservas-vuelos/shared';
 import { buildTestMonolith } from './helpers';
 
+process.env.LOG_LEVEL = 'silent';
 
 async function register(app: any, email: string) {
   const res = await request(app).post('/api/v1/auth/register').send({ email, password: 'Secret123*', fullName: 'Usuario Prueba' });

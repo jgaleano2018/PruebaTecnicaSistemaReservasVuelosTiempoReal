@@ -4,15 +4,14 @@
   "description": "Realtime Gateway: WebSocket (Socket.io) / SSE, gesti\u00f3n de conexiones, distribuci\u00f3n de eventos Kafka a clientes y escalabilidad horizontal",
   "main": "dist/main.js",
   "scripts": {
+    "build:shared": "npm --prefix ../../cliente/shared install && npm --prefix ../../cliente/shared run build",
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/main.js",
     "dev": "tsx watch src/main.ts",
     "test": "jest --runInBand",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "build:deps": "npm --prefix ../../cliente/shared install && npm --prefix ../../cliente/shared run build && npm --prefix ../shared-kernel install && npm --prefix ../shared-kernel run build"
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@reservas-vuelos/service-kernel": "file:../shared-kernel",
     "@reservas-vuelos/shared": "file:../../cliente/shared",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -23,8 +22,8 @@
     "pino": "^9.5.0",
     "pino-http": "^10.3.0",
     "rxjs": "^7.8.1",
-    "socket.io": "^4.8.1",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -47,10 +46,7 @@
     "roots": [
       "<rootDir>/test"
     ],
-    "testTimeout": 20000,
-    "setupFiles": [
-      "<rootDir>/test/setup-env.ts"
-    ]
+    "testTimeout": 20000
   },
   "license": "MIT"
 }

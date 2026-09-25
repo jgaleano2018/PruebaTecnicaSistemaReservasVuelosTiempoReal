@@ -6,7 +6,10 @@ import {
   FlightStatus,
   SeatStatus,
 } from '@reservas-vuelos/shared';
-import { Clock, EventBus, NotFoundError, logger } from '@reservas-vuelos/service-kernel';
+import { Clock } from '../shared/application/clock.port';
+import { EventBus } from '../shared/application/event-bus.port';
+import { NotFoundError } from '../shared/domain/errors';
+import { logger } from '../shared/infrastructure/logging/logger';
 import { FlightOccupancy, occupancyRate, recount, soldOutTransition, toOccupancyDto } from '../domain/occupancy';
 import { FlightCatalogClient, ManagedFlightRepository, OccupancyRepository } from '../domain/ports';
 import { ChangeFlightStatusUseCase } from './flight-management.use-cases';

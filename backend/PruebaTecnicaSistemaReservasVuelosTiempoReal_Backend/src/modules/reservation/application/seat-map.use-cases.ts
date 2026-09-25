@@ -1,5 +1,6 @@
 import { SeatAvailabilityDto, SeatDto, SeatMapDto, SeatStatus } from '@reservas-vuelos/shared';
-import { Clock, NotFoundError } from '@reservas-vuelos/service-kernel';
+import { Clock } from '../../../shared/application/clock.port';
+import { NotFoundError } from '../../../shared/domain/errors';
 import { SeatAvailabilityPort } from '../../flight/domain/flight.ports';
 import { effectiveSeatStatus, toSeatDto } from '../domain/reservation.entities';
 import { FlightReaderPort, SeatRepository } from '../domain/reservation.ports';
