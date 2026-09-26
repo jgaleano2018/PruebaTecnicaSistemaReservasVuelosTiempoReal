@@ -36,6 +36,8 @@ export function useFlightSearch(query: FlightSearchQueryDto | null) {
     queryFn: () => flights.search(query!),
     enabled: !!query,
     staleTime: 30_000,
+    // Al volver a los resultados se re-sincroniza (estados y disponibilidad pudieron cambiar mientras no estaba abierta)
+    refetchOnMount: 'always',
   });
 
   const updateAll = (fn: (list: FlightDto[]) => FlightDto[]) =>

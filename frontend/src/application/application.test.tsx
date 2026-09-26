@@ -11,7 +11,9 @@ import { useAuth } from './auth/auth-context';
 import { useCheckout, type ActiveCheckout } from './checkout/checkout-context';
 import { useLiveSeatMap } from './hooks/seats.hooks';
 import { useFlightSearch } from './hooks/flights.hooks';
-import { useAwaitConfirmation } from './hooks/reservations.hooks';
+import { useApplyConfirmedReservation, useAwaitConfirmation } from './hooks/reservations.hooks';
+import { queryKeys } from './query-keys';
+import { seat } from '@/test/fixtures';
 import { flight } from '@/test/fixtures';
 
 describe('SessionManager', () => {
@@ -174,5 +176,29 @@ describe('useAwaitConfirmation (HU3)', () => {
     mocks.reservations.reservation.mockResolvedValue({ id: 'res-1', status: 'CONFIRMED', reservationCode: 'ZZZ999' });
     const { result } = renderHook(() => useAwaitConfirmation('res-1', true), { wrapper });
     await waitFor(() => expect(result.current).toEqual({ status: 'confirmed', reservationCode: 'ZZZ999' }));
+  });
+});
+
+describe('HU3 · asiento ocupado de forma permanente tras confirmar (regresión)', () => {
+  it('actualiza la caché del mapa al confirmar y re-consulta el servidor al volver a la vista', async () => {
+    const { mocks, wrapper, queryClient } = setup();
+    // 1. El comprador ve su asiento bloqueado y pasa al checkout (la vista del mapa se desmonta)
+    mocks.reservations.seatMap.mockResolvedValue(seatMap([seat('1A', { status: SeatStatus.LOCKED, lockedByMe: true }), seat('1C')]));
+    const first = renderHook(() => useLiveSeatMap(FLIGHT_ID), { wrapper });
+    await waitFor(() => expect(first.result.current.data).toBeDefined());
+    first.unmount();
+
+    // 2. La reserva se confirma mientras el mapa no está montado: se aplica la ocupación sobre la caché
+    const { result } = renderHook(() => useApplyConfirmedReservation(), { wrapper });
+    act(() => result.current({ flightId: FLIGHT_ID, seatNumber: '1A', reservationId: 'res-1' }, 'ABC234'));
+    const cachedKey = queryClient.getQueryCache().findAll({ queryKey: queryKeys.seatMapAll(FLIGHT_ID) })[0].queryKey;
+    const cached = queryClient.getQueryData<ReturnType<typeof seatMap>>(cachedKey);
+    expect(cached?.seats.find((s) => s.seatNumber === '1A')?.status).toBe(SeatStatus.OCCUPIED);
+
+    // 3. Al volver al mapa se consulta de nuevo el estado real (OCUPADO) aunque la caché fuera reciente
+    mocks.reservations.seatMap.mockResolvedValue(seatMap([seat('1A', { status: SeatStatus.OCCUPIED }), seat('1C')]));
+    const again = renderHook(() => useLiveSeatMap(FLIGHT_ID), { wrapper });
+    await waitFor(() => expect(mocks.reservations.seatMap).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(again.result.current.data?.seats.find((s) => s.seatNumber === '1A')?.status).toBe(SeatStatus.OCCUPIED));
   });
 });

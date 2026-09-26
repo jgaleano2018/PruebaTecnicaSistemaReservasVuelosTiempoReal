@@ -1,6 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ReservationStatus, type ProcessPaymentRequestDto } from '@reservas-vuelos/shared';
+import {
+  ReservationStatus,
+  type ProcessPaymentRequestDto,
+  type ReservationConfirmedPayload,
+  type SeatMapDto,
+} from '@reservas-vuelos/shared';
+import { applySeatEvent } from '@/domain/seat-map';
 import { useAuth } from '../auth/auth-context';
 import { queryKeys } from '../query-keys';
 import { useRealtimeChannel } from '../realtime/use-realtime';
@@ -14,6 +20,45 @@ export function useProcessPayment() {
     mutationFn: (input: ProcessPaymentRequestDto) => checkout.pay(input),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: queryKeys.myPayments }),
   });
+}
+
+/**
+ * HU3 · Regla de tiempo real: tras confirmarse la reserva el asiento queda OCUPADO de forma permanente.
+ * Mientras el comprador estaba en el checkout, las vistas en vivo (mapa, resultados, dashboard) estaban
+ * desmontadas y no recibieron `seat:occupied`, así que su caché conservaba el asiento como "bloqueado por mí".
+ * Esta función aplica la ocupación sobre la caché y marca como obsoletas todas las lecturas afectadas,
+ * para que cualquier vista (o una recarga) muestre el estado real del servidor.
+ */
+export function useApplyConfirmedReservation() {
+  const queryClient = useQueryClient();
+  return useCallback(
+    (hold: { flightId: string; seatNumber: string; reservationId: string }, reservationCode?: string) => {
+      const occupied = {
+        type: 'occupied' as const,
+        payload: {
+          flightId: hold.flightId,
+          seatNumber: hold.seatNumber,
+          reservationId: hold.reservationId,
+          reservationCode: reservationCode ?? '',
+        } as ReservationConfirmedPayload,
+      };
+      queryClient.setQueriesData<SeatMapDto>({ queryKey: queryKeys.seatMapAll(hold.flightId) }, (map) =>
+        map ? applySeatEvent(map, occupied) : map,
+      );
+      const affected = [
+        queryKeys.seatMapAll(hold.flightId),
+        queryKeys.flight(hold.flightId),
+        queryKeys.flightSearchAll,
+        queryKeys.reservation(hold.reservationId),
+        queryKeys.ticket(hold.reservationId),
+        queryKeys.myReservations,
+        queryKeys.myPayments,
+        ['dashboard'],
+      ];
+      for (const queryKey of affected) void queryClient.invalidateQueries({ queryKey });
+    },
+    [queryClient],
+  );
 }
 
 export type ConfirmationState =

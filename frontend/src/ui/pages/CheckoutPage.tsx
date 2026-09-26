@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BusinessRules, detectCardBrand, PaymentStatus, processPaymentSchema, type PaymentDto } from '@reservas-vuelos/shared';
 import { useAuth } from '@/application/auth/auth-context';
 import { useCheckout, type ActiveCheckout } from '@/application/checkout/checkout-context';
-import { useAwaitConfirmation, useProcessPayment } from '@/application/hooks/reservations.hooks';
+import { useApplyConfirmedReservation, useAwaitConfirmation, useProcessPayment } from '@/application/hooks/reservations.hooks';
 import { fieldErrorsOf, toUserMessage } from '@/domain/errors';
 import { formatDate, formatMoney, formatTime } from '@/domain/format';
 import { cabinLabel, releaseReasonLabel, seatPositionLabel } from '@/domain/labels';
@@ -75,13 +75,16 @@ export function CheckoutPage() {
   const [approved, setApproved] = useState<{ checkout: ActiveCheckout; payment: PaymentDto } | null>(null);
 
   const confirmation = useAwaitConfirmation(approved?.checkout.hold.reservationId, !!approved);
+  const applyConfirmed = useApplyConfirmedReservation();
 
   useEffect(() => {
     if (confirmation.status === 'confirmed' && approved) {
+      // El asiento queda OCUPADO en todas las vistas (caché) antes de salir del checkout
+      applyConfirmed(approved.checkout.hold, confirmation.reservationCode);
       complete();
       navigate(`/reservations/${approved.checkout.hold.reservationId}/ticket`, { replace: true, state: { fresh: true } });
     }
-  }, [confirmation.status, approved, complete, navigate]);
+  }, [confirmation, approved, applyConfirmed, complete, navigate]);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => setForm((f) => ({ ...f, [key]: value }));
 

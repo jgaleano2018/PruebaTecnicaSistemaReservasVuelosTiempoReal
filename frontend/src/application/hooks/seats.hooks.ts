@@ -33,8 +33,10 @@ export function useLiveSeatMap(flightId: string | undefined, channel: 'flight' |
     queryKey: key,
     queryFn: () => reservations.seatMap(flightId!),
     enabled: !!flightId,
-    // El tiempo real mantiene el mapa al día; se refresca solo por reconexión o foco.
+    // Mientras la vista está montada el tiempo real mantiene el mapa al día. Al (re)entrar se consulta siempre
+    // al servidor: los eventos emitidos mientras la vista no estaba abierta no se reciben.
     staleTime: 60_000,
+    refetchOnMount: 'always',
   });
 
   const apply = useCallback(
